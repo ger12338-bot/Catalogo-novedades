@@ -389,8 +389,7 @@ function mostrarProductos(productos) {
   if (productos.length === 0) {
     contenedor.innerHTML = '<div class="loading">No se encontraron productos 😕</div>';
     return;
-  }
-  
+  } 
   contenedor.innerHTML = productos.map(p => {
     let badge = '';
     if(p.Etiqueta === 'Nuevo'){
@@ -408,6 +407,7 @@ function mostrarProductos(productos) {
         </div>
         <div class="card-body">
           <h3>${p.Nombre}</h3>
+          <p style="font-size: 12px; color: #E91E63; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">${p.Categoria || ''}</p>
           <p style="font-size: 13px; color: #666; margin-bottom: 8px; height: 32px; overflow: hidden;">${p.Descripcion || ''}</p>
           <div class="price">$${p.Precio}</div>
           <a href="https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(p.Nombre)} - $${p.Precio}" 
@@ -416,8 +416,7 @@ function mostrarProductos(productos) {
       </div>
     `;
   }).join('');
-}
-    
+}   
     document.getElementById('buscador').addEventListener('input', filtrarProductos);
     
     cargarProductos();

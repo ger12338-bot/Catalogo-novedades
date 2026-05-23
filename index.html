@@ -383,39 +383,40 @@
       mostrarProductos(filtrados);
     }
     
-    function mostrarProductos(productos) {
-      const contenedor = document.getElementById('products');
-      
-      if (productos.length === 0) {
-        contenedor.innerHTML = '<div class="loading">No se encontraron productos 😕</div>';
-        return;
-      }
-      
-      contenedor.innerHTML = productos.map(p => {
-        let badge = '';
-        if(p.Etiqueta === 'Nuevo'){
-          badge = `<div class="badge badge-nuevo">Nuevo</div>`;
-        }
-        if(p.Etiqueta === 'Oferta'){
-          badge = `<div class="badge badge-oferta">Oferta</div>`;
-        }
-        
-        return `
-          <div class="card">
-            <div class="card-img-wrap">
-              <img src="${p.Foto}" alt="${p.Nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Foto'">
-              ${badge}
-            </div>
-            <div class="card-body">
-              <h3>${p.Nombre}</h3>
-              <div class="price">$${p.Precio}</div>
-              <a href="https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(p.Nombre)} - $${p.Precio}" 
-                 class="btn" target="_blank">Pedir por WhatsApp</a>
-            </div>
-          </div>
-        `;
-      }).join('');
+function mostrarProductos(productos) {
+  const contenedor = document.getElementById('products');
+  
+  if (productos.length === 0) {
+    contenedor.innerHTML = '<div class="loading">No se encontraron productos 😕</div>';
+    return;
+  }
+  
+  contenedor.innerHTML = productos.map(p => {
+    let badge = '';
+    if(p.Etiqueta === 'Nuevo'){
+      badge = `<div class="badge badge-nuevo">Nuevo</div>`;
     }
+    if(p.Etiqueta === 'Oferta'){
+      badge = `<div class="badge badge-oferta">Oferta</div>`;
+    }
+    
+    return `
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="${p.Foto}" alt="${p.Nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Foto'">
+          ${badge}
+        </div>
+        <div class="card-body">
+          <h3>${p.Nombre}</h3>
+          <p style="font-size: 13px; color: #666; margin-bottom: 8px; height: 32px; overflow: hidden;">${p.Descripcion || ''}</p>
+          <div class="price">$${p.Precio}</div>
+          <a href="https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(p.Nombre)} - $${p.Precio}" 
+             class="btn" target="_blank">Pedir por WhatsApp</a>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
     
     document.getElementById('buscador').addEventListener('input', filtrarProductos);
     

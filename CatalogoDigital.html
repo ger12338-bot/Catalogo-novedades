@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo Novedades</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+  body { background: #fafafa; color: #222; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  header { background: #1a1a1a; color: white; padding: 20px 0; margin-bottom: 30px; text-align: center; }
+  h1 { font-size: 1.8rem; }
+.btn { background: #25D366; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; transition: 0.2s; }
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  #productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; }
+.producto { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: 0.2s; }
+.producto:hover { transform: translateY(-3px); box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+.producto img { width: 100%; height: 260px; object-fit: cover; background: #f0f0f0; }
+.producto-info { padding: 15px; }
+.producto-info h3 { margin-bottom: 6px; font-size: 1.1rem; }
+.producto-info p { color: #666; font-size: 0.9rem; margin-bottom: 12px; min-height: 35px; }
+.precio { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+.badge { background:#eee; padding:3px 8px; border-radius:4px; font-size:0.75rem; display:inline-block; margin-bottom:8px; }
+.loader { text-align: center; padding: 40px; color: #666; grid-column: 1/-1; }
+  #menuCategorias { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:25px; }
+.btn-categoria {
+    background: white; 
+    color: #333; 
+    border: 2px solid #ddd; 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    cursor: pointer; 
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.2s;
+  }
+.btn-categoria:hover, .btn-categoria.activo {
+    background: #1a1a1a; 
+    color: white; 
+    border-color: #1a1a1a;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Novedades</h1>
+  </div>
+</header>
+
+<div class="container">
+  <h2>Nuestro Catálogo</h2>
+  <p style="color:#666; margin-bottom:20px;">Selecciona una categoría para filtrar</p>
+  
+  <div id="menuCategorias"></div>
+  <div id="productos" class="loader">Cargando productos...</div>
+</div>
+
+<script>
+  // 1. TU SHEET ID - Ya está puesto 👇
+  const SHEET_ID = "1ApUhwGb89SDBBFK_RwKiWUA9fijv4QLUVvfdnI_4bHw";
+  
+  // 2. CAMBIA ESTE WHATSAPP 👇 con 52 + lada
+  const WHATSAPP = "528125198131";
+  
+  // 3. NOMBRE DE TU HOJA
+  const SHEET_NAME = "Productos";
+
+  let todosLosProductos = [];
+
+  async function cargarProductos() {
+    const url = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
+    
+    try {
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('Sheet no público o ID incorrecto');
+      
+      const productos = await res.json();
+      todosLosProductos = productos.filter(p => 
+        p.Activo && p.Activo.toUpperCase() === 'SI' && p.Nombre
+      );
+
+      crearMenuCategorias();
+      mostrarProductos('Todas');
+
+    } catch (error) {
+      console.error(error);
+      document.getElementById('productos').innerHTML = `
+        <div class="loader">
+          <strong>Error al cargar</strong><br><br>
+          Revisa que el Sheet esté en "Cualquier persona con el enlace puede ver"
+        </div>`;
+    }
+  }
+
+  function crearMenuCategorias() {
+    const categorias = ['Todas', ...new Set(todosLosProductos.map(p => p.Categoria).filter(Boolean))];
+    const menu = document.getElementById('menuCategorias');
+    
+    menu.innerHTML = categorias.map(cat => `
+      <button class="btn-categoria" onclick="mostrarProductos('${cat}')" id="cat-${cat}">
+        ${cat}
+      </button>
+    `).join('');
+  }
+
+  window.mostrarProductos = function(categoria) {
+    const contenedor = document.getElementById('productos');
+    contenedor.innerHTML = '';
+
+    document.querySelectorAll('.btn-categoria').forEach(btn => btn.classList.remove('activo'));
+    const btnActivo = document.getElementById(`cat-${categoria}`);
+    if(btnActivo) btnActivo.classList.add('activo');
+
+    const productosFiltrados = categoria === 'Todas' 
+      ? todosLosProductos 
+      : todosLosProductos.filter(p => p.Categoria === categoria);
+
+    if(productosFiltrados.length === 0) {
+      contenedor.innerHTML = '<p class="loader">No hay productos en esta categoría.</p>';
+      return;
+    }
+
+    productosFiltrados.forEach(p => {
+      const fotoUrl = p.Foto || 'https://via.placeholder.com/300x300?text=Sin+Foto';
+      
+      contenedor.innerHTML += `
+        <div class="producto">
+          <img src="${fotoUrl}" alt="${p.Nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300?text=Error'">
+          <div class="producto-info">
+            <span class="badge">${p.Categoria || 'General'}</span>
+            <h3>${p.Nombre}</h3>
+            <p>${p.Descripcion || ''}</p>
+            <div class="precio">$${p.Precio}</div>
+            <a class="btn" href="https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(p.Nombre)} - $${p.Precio}" target="_blank">Pedir por WhatsApp</a>
+          </div>
+        </div>`;
+    });
+  }
+
+  cargarProductos();
+  setInterval(cargarProductos, 300000);
+</script>
+
+</body>
+</html>

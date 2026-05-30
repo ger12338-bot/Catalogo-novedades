@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novedades Gerlid - Catálogo</title>
+  <title>Novedades - Catálogo Online</title>
+  <link rel="icon" href="https://i.postimg.cc/rmGsKQqP/Diseno-sin-titulo.png" type="image/png">
+  <meta name="theme-color" content="#E91E63">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #f5f5f5; }
     
-    /* Modal Popup */
+    /* Modal Ofertas al entrar */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -53,9 +55,7 @@
       cursor: pointer;
       line-height: 1;
     }
-    .modal-body {
-      padding: 20px;
-    }
+    .modal-body { padding: 20px; }
     .modal-producto {
       display: flex;
       gap: 12px;
@@ -63,7 +63,7 @@
       padding-bottom: 15px;
       border-bottom: 1px solid #eee;
     }
-    .modal-producto:last-child { border: none; }
+    .modal-producto:last-child { border: none; padding-bottom: 0; margin-bottom: 0; }
     .modal-producto img {
       width: 80px;
       height: 80px;
@@ -84,6 +84,98 @@
       margin-top: 15px;
     }
     
+    /* Modal de Producto Individual - NUEVO */
+    .modal-producto-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.2s;
+    }
+    .modal-producto-overlay.active { display: flex; }
+    .modal-producto-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideUp 0.3s;
+    }
+    .modal-producto-img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 16px 16px 0 0;
+    }
+    .modal-producto-body { padding: 20px; }
+    .modal-producto-body h2 { 
+      font-size: 22px; 
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+    .modal-producto-categoria {
+      display: inline-block;
+      background: #f1f1f1;
+      color: #E91E63;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .modal-producto-desc {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+    .modal-producto-precio {
+      font-size: 32px;
+      font-weight: bold;
+      color: #E91E63;
+      margin-bottom: 20px;
+    }
+    .modal-producto-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .modal-whatsapp-btn {
+      display: block;
+      background: #25D366;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+    .modal-whatsapp-btn:hover { background: #1da851; }
+    
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -91,6 +183,27 @@
     @keyframes slideUp {
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* Botón flotante WhatsApp - NUEVO */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 998;
+      transition: all 0.3s;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
     }
     
     /* Banner de ofertas */
@@ -115,8 +228,8 @@
       text-align: center; 
     }
     header img {
-      height: 70px;
-      width: 70px;
+      height: 120px;
+      width: 120px;
       margin-bottom: 10px;
       border-radius: 50%;
       object-fit: cover;
@@ -176,8 +289,19 @@
       transform: translateY(-5px); 
       box-shadow: 0 8px 20px rgba(233,30,99,0.3); 
     }
-    .card-img-wrap { position: relative; }
-    .card img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .card-img-wrap { 
+      position: relative; 
+      cursor: pointer; 
+      overflow: hidden;
+    }
+    .card img { 
+      width: 100%; 
+      height: 180px; 
+      object-fit: cover; 
+      display: block;
+      transition: transform 0.3s;
+    }
+    .card-img-wrap:hover img { transform: scale(1.05); }
     .badge {
       position: absolute; 
       top: 10px; 
@@ -188,6 +312,7 @@
       font-weight: bold;
       color: white;
       text-transform: uppercase;
+      z-index: 1;
     }
     .badge-nuevo { background: #E91E63; }
     .badge-oferta { background: #FF5722; }
@@ -209,6 +334,7 @@
     .btn:hover { background: #C2185B; }
     .loading { text-align: center; padding: 40px; font-size: 18px; grid-column: 1/-1; }
     
+    /* Footer */
     footer {
       background: #1a1a1a;
       color: white;
@@ -222,12 +348,13 @@
       .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
       .card img { height: 250px; }
       header h1 { font-size: 32px; }
+      .modal-producto-img { height: 500px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- MODAL DE BIENVENIDA - Sale solo 1 vez -->
+  <!-- Modal de Ofertas al entrar -->
   <div id="modal-ofertas" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -235,7 +362,23 @@
         <button class="modal-close" onclick="cerrarModal()">&times;</button>
       </div>
       <div class="modal-body" id="modal-productos">
-        <!-- Aquí se cargan los productos nuevos/oferta -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Producto Individual - NUEVO -->
+  <div id="modal-producto" class="modal-producto-overlay">
+    <div class="modal-producto-content">
+      <button class="modal-producto-close" onclick="cerrarModalProducto()">&times;</button>
+      <img id="modal-prod-img" class="modal-producto-img" src="" alt="">
+      <div class="modal-producto-body">
+        <span id="modal-prod-cat" class="modal-producto-categoria"></span>
+        <h2 id="modal-prod-nombre"></h2>
+        <p id="modal-prod-desc" class="modal-producto-desc"></p>
+        <div id="modal-prod-precio" class="modal-producto-precio"></div>
+        <a id="modal-prod-wsp" class="modal-whatsapp-btn" target="_blank">
+          💬 Pedir por WhatsApp
+        </a>
       </div>
     </div>
   </div>
@@ -268,10 +411,15 @@
     </div>
   </div>
 
+  <!-- Botón flotante WhatsApp - NUEVO -->
+  <a href="https://wa.me/528129411481" target="_blank" class="whatsapp-float">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </a>
+
   <footer>
     <div class="container">
       <p><strong>Novedades Gerlid</strong></p>
-      <p>📍 Pilares Sec Amanecer, Salinas Victoria.</p>
+      <p>📍 Pilares 2do Sec. Amanecer, Salinas Victoria.</p>
       <p>📱 Pedidos por WhatsApp</p>
       <p style="margin-top: 15px; font-size: 12px; opacity: 0.6;">© 2026 Catálogo</p>
     </div>
@@ -296,7 +444,7 @@
         
         crearBotonesCategoria();
         mostrarProductos(todosLosProductos);
-        mostrarModalOfertas(); // Mostrar modal al cargar
+        mostrarModalOfertas();
         
       } catch (error) {
         document.getElementById('products').innerHTML = 
@@ -304,18 +452,11 @@
       }
     }
     
-    // MODAL: Mostrar productos nuevos/oferta al entrar
+    // Modal de ofertas al entrar
     function mostrarModalOfertas() {
-      // Si ya lo vio hoy, no mostrar de nuevo
-      //const yaVisto = localStorage.getItem('modalVisto');
-      const hoy = new Date().toDateString();
-      
-      //if (yaVisto === hoy) return;
-      
-      // Filtrar productos con etiqueta Nuevo u Oferta
       const destacados = todosLosProductos.filter(p => 
         p.Etiqueta === 'Nuevo' || p.Etiqueta === 'Oferta'
-      ).slice(0, 3); // Solo los primeros 3
+      ).slice(0, 3);
       
       if (destacados.length === 0) return;
       
@@ -334,16 +475,42 @@
       `;
       
       document.getElementById('modal-ofertas').classList.add('active');
-      localStorage.setItem('modalVisto', hoy);
     }
     
     function cerrarModal() {
       document.getElementById('modal-ofertas').classList.remove('active');
     }
     
-    // Cerrar modal con click afuera
+    // Modal de Producto Individual - NUEVO
+    function abrirModalProducto(producto) {
+      document.getElementById('modal-prod-img').src = producto.Foto;
+      document.getElementById('modal-prod-cat').textContent = producto.Categoria || '';
+      document.getElementById('modal-prod-nombre').textContent = producto.Nombre;
+      document.getElementById('modal-prod-desc').textContent = producto.Descripcion || 'Sin descripción disponible';
+      document.getElementById('modal-prod-precio').textContent = `$${producto.Precio}`;
+      document.getElementById('modal-prod-wsp').href = `https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(producto.Nombre)} - $${producto.Precio}`;
+      
+      document.getElementById('modal-producto').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function cerrarModalProducto() {
+      document.getElementById('modal-producto').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Cerrar modals con click afuera
     document.getElementById('modal-ofertas').addEventListener('click', (e) => {
       if (e.target.id === 'modal-ofertas') cerrarModal();
+    });
+    
+    document.getElementById('modal-producto').addEventListener('click', (e) => {
+      if (e.target.id === 'modal-producto') cerrarModalProducto();
+    });
+    
+    // Cerrar con botón atrás en celular
+    window.addEventListener('popstate', () => {
+      cerrarModalProducto();
     });
     
     function crearBotonesCategoria() {
@@ -389,8 +556,9 @@ function mostrarProductos(productos) {
   if (productos.length === 0) {
     contenedor.innerHTML = '<div class="loading">No se encontraron productos 😕</div>';
     return;
-  } 
-  contenedor.innerHTML = productos.map(p => {
+  }
+  
+  contenedor.innerHTML = productos.map((p) => {
     let badge = '';
     if(p.Etiqueta === 'Nuevo'){
       badge = `<div class="badge badge-nuevo">Nuevo</div>`;
@@ -401,14 +569,13 @@ function mostrarProductos(productos) {
     
     return `
       <div class="card">
-        <div class="card-img-wrap">
+        <div class="card-img-wrap" onclick='abrirModalProducto(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
           <img src="${p.Foto}" alt="${p.Nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Foto'">
           ${badge}
         </div>
         <div class="card-body">
           <h3>${p.Nombre}</h3>
-          <p style="font-size: 12px; color: #E91E63; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">${p.Categoria || ''}</p>
-          <p style="font-size: 13px; color: #666; margin-bottom: 8px; height: 32px; overflow: hidden;">${p.Descripcion || ''}</p>
+          <p style="font-size: 12px; color: #666; margin-bottom: 8px; height: 32px; overflow: hidden; line-height: 1.3;">${p.Descripcion || ''}</p>
           <div class="price">$${p.Precio}</div>
           <a href="https://wa.me/${WHATSAPP}?text=Hola! Me interesa: ${encodeURIComponent(p.Nombre)} - $${p.Precio}" 
              class="btn" target="_blank">Pedir por WhatsApp</a>
@@ -416,7 +583,8 @@ function mostrarProductos(productos) {
       </div>
     `;
   }).join('');
-}   
+}
+    
     document.getElementById('buscador').addEventListener('input', filtrarProductos);
     
     cargarProductos();
